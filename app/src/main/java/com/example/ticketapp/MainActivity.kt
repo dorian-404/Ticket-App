@@ -114,7 +114,7 @@ class MainActivity : ComponentActivity() {
         // initialisation de l'adaptateur NFC
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-        // Création d'un PendingIntent pour lancer votre activité lorsque une étiquette NFC est détectée
+        // Création d'un PendingIntent pour lancer  l'activité lorsque une étiquette NFC est détectée
         val nfcIntent = Intent(this, javaClass).apply {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
@@ -142,7 +142,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
-        // Désenregistrement de votre activité pour recevoir les événements NFC
+        // Désenregistrement de l'activité pour recevoir les événements NFC
         nfcAdapter?.disableForegroundDispatch(this)
     }
 
