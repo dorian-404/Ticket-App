@@ -54,10 +54,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.ticketapp.components.EventDetails
 import com.example.ticketapp.components.TicketComponent
 
 class MainActivity : ComponentActivity() {
@@ -85,7 +81,7 @@ class MainActivity : ComponentActivity() {
                                 .padding(paddingValues),
                             color = MaterialTheme.colorScheme.background
                         ) {
-                            // Votre contenu va ici
+
                             when (selected) {
                                 0 -> HomeScreen()
                                 1 -> TicketScreen()
@@ -115,123 +111,160 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+        // initialisation de l'adaptateur NFC
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
+
+        // Création d'un PendingIntent pour lancer votre activité lorsque une étiquette NFC est détectée
+        val nfcIntent = Intent(this, javaClass).apply {
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        }
+        nfcPendingIntent = PendingIntent.getActivity(
+            this, 0, nfcIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Création d'un IntentFilter pour intercepter les étiquettes NFC découvertes
+        val ndefIntentFilter = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED).apply {
+            try {
+                addDataType("*/*")
+            } catch (e: IntentFilter.MalformedMimeTypeException) {
+                throw RuntimeException("Malformed MIME type", e)
+            }
+        }
+        intentFiltersArray = arrayOf(ndefIntentFilter)
     }
-}
-@Preview(showSystemUi = true)
-@Composable
-fun HomeScreen() {
 
-    LazyColumn {
+    override fun onResume() {
+        super.onResume()
+        // Enregistrement de votre activité pour recevoir les événements NFC
+        nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, intentFiltersArray, null)
+    }
 
-        item {
-            HeaderComponent()
+    override fun onPause() {
+        super.onPause()
+        // Désenregistrement de votre activité pour recevoir les événements NFC
+        nfcAdapter?.disableForegroundDispatch(this)
+    }
 
-            SearchBarSection()
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        // Traitement des intents NFC
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED == intent.action) {
+            val rawMessages = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+            val messages = rawMessages?.map { it as NdefMessage }
 
-            // Spacer
-            Spacer(modifier = Modifier.height(5.dp))
-            Text(text = "Upcoming Events",
-                modifier = Modifier
-                    .padding(16.dp),
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-                fontSize = 20.sp)
+        }
+    }
 
-            ConcertsSectionData()
+    @Preview(showSystemUi = true)
+    @Composable
+    fun HomeScreen() {
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+        LazyColumn {
+
+            item {
+                HeaderComponent()
+
+                SearchBarSection()
+
+                // Spacer
+                Spacer(modifier = Modifier.height(5.dp))
                 Text(
-                    text = "Recommended Events",
+                    text = "Upcoming Events",
                     modifier = Modifier
                         .padding(16.dp),
                     fontWeight = FontWeight.Bold,
+                    color = Color.Black,
                     fontSize = 20.sp
                 )
-                TextButton(onClick = { /* Handle See All click */ }) {
+
+                ConcertsSectionData()
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Text(
-                        text = "See all",
-                        color = Color.Blue,
-                        fontWeight = FontWeight.Medium
+                        text = "Recommended Events",
+                        modifier = Modifier
+                            .padding(16.dp),
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
                     )
+                    TextButton(onClick = { /* Handle See All click */ }) {
+                        Text(
+                            text = "See all",
+                            color = Color.Blue,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
+
+            item { EventsSection() }
+
+            item { EventsSection() }
         }
-
-        item { EventsSection() }
-
-        item { EventsSection() }
     }
-}
 
-@Preview(showSystemUi = true)
-@Composable
-fun TicketScreen() {
-    val navController = rememberNavController()
-    Text(text = "My Tickets",
-        modifier = Modifier
-            .padding(66.dp),
-        textAlign = TextAlign.Center,
-        fontWeight = FontWeight.Bold,
-        color = Color.Black,
-        fontSize = 30.sp)
+    @Preview(showSystemUi = true)
+    @Composable
+    fun TicketScreen() {
+        Text(
+            text = "My Tickets",
+            modifier = Modifier
+                .padding(66.dp),
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black,
+            fontSize = 30.sp
+        )
 
-    TicketComponent(navController = navController)
+        TicketComponent()
 
-}
-
-@Composable
-fun FavoritesScreen() {
-}
-
-@Composable
-fun ProfileScreen() {
-}
-
-@Composable
-fun MainScreen() {
-    val navController = rememberNavController()
-
-    NavHost(navController = navController, startDestination = "ticketComponent") {
-        composable("ticketComponent") { TicketComponent(navController) }
-        composable("eventDetails") { EventDetails() }
     }
-}
 
-val bottomNavItems = listOf(
-    BottomNavItem(
-        title = "Home",
-        route = "home",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
-    ),
-    BottomNavItem(
-        title = "My Tickets",
-        route = "tickets",
-        selectedIcon = Icons.Filled.MailOutline,
-        unselectedIcon = Icons.Outlined.MailOutline
-    ),
-    BottomNavItem(
-        title = "Favorites",
-        route = "favorites",
-        selectedIcon = Icons.Filled.Favorite,
-        unselectedIcon = Icons.Outlined.FavoriteBorder
-    ),
-    BottomNavItem(
-        title = "Profile",
-        route = "profile",
-        selectedIcon = Icons.Filled.AccountCircle,
-        unselectedIcon = Icons.Outlined.AccountCircle
+    @Composable
+    fun FavoritesScreen() {
+    }
+
+    @Composable
+    fun ProfileScreen() {
+    }
+
+    val bottomNavItems = listOf(
+        BottomNavItem(
+            title = "Home",
+            route = "home",
+            selectedIcon = Icons.Filled.Home,
+            unselectedIcon = Icons.Outlined.Home
+        ),
+        BottomNavItem(
+            title = "My Tickets",
+            route = "tickets",
+            selectedIcon = Icons.Filled.MailOutline,
+            unselectedIcon = Icons.Outlined.MailOutline
+        ),
+        BottomNavItem(
+            title = "Favorites",
+            route = "favorites",
+            selectedIcon = Icons.Filled.Favorite,
+            unselectedIcon = Icons.Outlined.FavoriteBorder
+        ),
+        BottomNavItem(
+            title = "Profile",
+            route = "profile",
+            selectedIcon = Icons.Filled.AccountCircle,
+            unselectedIcon = Icons.Outlined.AccountCircle
+        )
     )
-)
 
-data class BottomNavItem(
-    val title: String,
-    val route: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)
+    data class BottomNavItem(
+        val title: String,
+        val route: String,
+        val selectedIcon: ImageVector,
+        val unselectedIcon: ImageVector
+    )
+}

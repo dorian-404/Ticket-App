@@ -31,12 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavController
 import com.example.ticketapp.R
 
-//@Preview(showSystemUi = true, showBackground = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun TicketComponent(navController: NavController) {
+fun TicketComponent() {
 
     val showDialog = remember { mutableStateOf(false) }
 
@@ -61,7 +60,7 @@ fun TicketComponent(navController: NavController) {
             time = "11.00 - 20.00",
             location = "Bathurst",
             tickets = "2 Tickets",
-            navController = navController
+            showDialog = showDialog
         )
         Spacer(modifier = Modifier.height(16.dp))
         TicketCard(
@@ -71,7 +70,7 @@ fun TicketComponent(navController: NavController) {
             time = "11.00 - 20.00",
             location = "Bathurst",
             tickets = "2 Tickets",
-            navController = navController
+            showDialog = showDialog
         )
     }
 
@@ -96,13 +95,13 @@ fun TicketCard(
     time: String,
     location: String,
     tickets: String,
-    navController: NavController
+    showDialog: MutableState<Boolean>
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-            .clickable { navController.navigate("eventDetails") },
+            .clickable { showDialog.value = true },
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(
