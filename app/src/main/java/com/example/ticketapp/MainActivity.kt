@@ -3,7 +3,6 @@ package com.example.ticketapp
 import EventsSection
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -33,13 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ticketapp.components.HeaderComponent
 import com.example.ticketapp.components.SearchBarSection
-import com.example.ticketapp.data.ConcertsSectionData
+import com.example.ticketapp.models.ConcertsSectionData
 import com.example.ticketapp.ui.theme.TicketAppTheme
 
 import android.app.PendingIntent
@@ -54,6 +52,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.Alignment
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.ticketapp.components.EventDetails
+import com.example.ticketapp.components.TicketBookingScreen
 import com.example.ticketapp.components.TicketComponent
 
 class MainActivity : ComponentActivity() {
@@ -212,18 +215,14 @@ class MainActivity : ComponentActivity() {
     @Preview(showSystemUi = true)
     @Composable
     fun TicketScreen() {
-        Text(
-            text = "My Tickets",
-            modifier = Modifier
-                .padding(66.dp),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black,
-            fontSize = 30.sp
-        )
 
-        TicketComponent()
+        val navController = rememberNavController()
 
+        NavHost(navController = navController, startDestination = "ticketComponent") {
+            composable("ticketComponent") { TicketComponent(navController) }
+            composable("eventDetails") { EventDetails(navController) }
+            composable("ticketBooking") { TicketBookingScreen() }
+        }
     }
 
     @Composable

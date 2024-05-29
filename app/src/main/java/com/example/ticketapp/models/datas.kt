@@ -1,4 +1,4 @@
-package com.example.ticketapp.data
+package com.example.ticketapp.models
 
 data class Concerts(
     val nameArtiste: String,

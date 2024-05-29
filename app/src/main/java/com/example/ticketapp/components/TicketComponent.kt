@@ -31,13 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.ticketapp.R
 
-@Preview(showSystemUi = true, showBackground = true)
+//@Preview(showSystemUi = true, showBackground = true)
 @Composable
-fun TicketComponent() {
+fun TicketComponent(navController: NavController) {
 
-    val showDialog = remember { mutableStateOf(false) }
+//    val showDialog = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -60,7 +62,7 @@ fun TicketComponent() {
             time = "11.00 - 20.00",
             location = "Bathurst",
             tickets = "2 Tickets",
-            showDialog = showDialog
+            navController = navController
         )
         Spacer(modifier = Modifier.height(16.dp))
         TicketCard(
@@ -70,21 +72,21 @@ fun TicketComponent() {
             time = "11.00 - 20.00",
             location = "Bathurst",
             tickets = "2 Tickets",
-            showDialog = showDialog
+            navController = navController
         )
     }
 
     // verif
-    if (showDialog.value) {
-        Dialog(
-            onDismissRequest = { showDialog.value = false },
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                EventDetails()
-            }
-        }
-    }
+//    if (showDialog.value) {
+//        Dialog(
+//            onDismissRequest = { showDialog.value = false },
+//            properties = DialogProperties(usePlatformDefaultWidth = false)
+//        ) {
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                EventDetails()
+//            }
+//        }
+//    }
 }
 
 @Composable
@@ -95,13 +97,13 @@ fun TicketCard(
     time: String,
     location: String,
     tickets: String,
-    showDialog: MutableState<Boolean>
+    navController: NavController
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-            .clickable { showDialog.value = true },
+            .clickable { navController.navigate("eventDetails") },
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(

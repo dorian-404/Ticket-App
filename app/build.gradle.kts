@@ -73,4 +73,7 @@ dependencies {
     // Extended Icon
     implementation("com.vipulasri:ticketview:1.1.2")
 
+    // Swipe
+
+
 }

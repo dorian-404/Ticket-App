@@ -1,4 +1,4 @@
-package com.example.ticketapp.data
+package com.example.ticketapp.models
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box

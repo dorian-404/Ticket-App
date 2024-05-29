@@ -2,6 +2,7 @@ package com.example.ticketapp.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -24,28 +25,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.ticketapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun EventDetails() {
+fun EventDetails(navController: NavController) {
     val paddingValue = 10.dp
     val spacingValue = 16.dp
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        EventImage()
-        Spacer(modifier = Modifier.height(spacingValue))
-        EventDescription(paddingValue = paddingValue)
-        EventInformation(paddingValue = paddingValue)
-        Spacer(modifier = Modifier.height(spacingValue))
-        BuyTicketButton(spacingValue = spacingValue)
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item { EventImage(navController) }
+        item { Spacer(modifier = Modifier.height(spacingValue)) }
+        item { EventDescription(paddingValue = paddingValue) }
+        item { EventInformation(paddingValue = paddingValue) }
+        item { Spacer(modifier = Modifier.height(spacingValue)) }
+        item { BuyTicketButton(spacingValue = spacingValue, navController = navController) }
     }
 }
 
 @Composable
-fun EventImage() {
+fun EventImage(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,6 +61,30 @@ fun EventImage() {
                 .fillMaxSize()
                 .fillMaxHeight()
         )
+        IconButton(
+            onClick = { navController.navigateUp() },
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+        IconButton(
+            onClick = { /* Handle favorite click */ },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(16.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.FavoriteBorder,
+                contentDescription = "Favorite",
+                tint = Color.White
+            )
+        }
         EventDetailsOverlay()
     }
 }
@@ -106,7 +132,7 @@ fun EventInformation(paddingValue: Dp) {
 }
 
 @Composable
-fun BuyTicketButton(spacingValue: Dp) {
+fun BuyTicketButton(spacingValue: Dp, navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,8 +141,7 @@ fun BuyTicketButton(spacingValue: Dp) {
     ) {
         Spacer(modifier = Modifier.width(spacingValue))
         Button(onClick = {
-            //rememberNavController()
-            //navController.navigate("modal_page")
+            navController.navigate("ticketBooking")
         },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(
