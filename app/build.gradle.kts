@@ -1,6 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id ("com.google.devtools.ksp")
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
@@ -73,7 +75,12 @@ dependencies {
     // Extended Icon
     implementation("com.vipulasri:ticketview:1.1.2")
 
-    // Swipe
+    // Room dependency
+    val room_version = "2.5.2"
+
+    implementation("androidx.room:room-ktx:$room_version")
+    // To use Kotlin annotation processing tool (kapt)
+    ksp("androidx.room:room-compiler:$room_version")
 
 
 }

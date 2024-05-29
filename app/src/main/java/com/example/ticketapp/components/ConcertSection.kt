@@ -1,4 +1,4 @@
-package com.example.ticketapp.models
+package com.example.ticketapp.data
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -22,33 +22,41 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ticketapp.R
 
-val concerts = listOf(
-
-    Concerts(
-        nameArtiste = "Damso",
-        location = "Videotron",
-        hour = "8.00 PM - 11.00 PM"
-    ),
-    Concerts(
-        nameArtiste = "Tiakola",
-        location = "Centre Bell",
-        hour = "8.00 PM - 11.00 PM"
-    ),
-    Concerts(
-        nameArtiste = "Gazo",
-        location = "K.C Irving",
-        hour = "8.00 PM - 11.00 PM"
-    ),
-    Concerts(
-        nameArtiste = "Ninho",
-        location = "Gill",
-        hour = "8.00 PM - 11.00 PM"
-    ),
+data class Concerts(
+    val nameArtiste: String,
+    val location: String,
+    val hour: String
 )
+
+val damsoConcert = Concerts(
+    nameArtiste = "Damso",
+    location = "Videotron",
+    hour = "8.00 PM - 11.00 PM"
+)
+
+val tiakolaConcert = Concerts(
+    nameArtiste = "Tiakola",
+    location = "Centre Bell",
+    hour = "8.00 PM - 11.00 PM"
+)
+
+val gazoConcert = Concerts(
+    nameArtiste = "Gazo",
+    location = "K.C Irving",
+    hour = "8.00 PM - 11.00 PM"
+)
+
+val ninhoConcert = Concerts(
+    nameArtiste = "Ninho",
+    location = "Gill",
+    hour = "8.00 PM - 11.00 PM"
+)
+
+val concerts = listOf(damsoConcert, tiakolaConcert, gazoConcert, ninhoConcert)
 
 @Preview(showSystemUi = true)
 @Composable
-fun ConcertsSectionData() {
+fun ConcertSection() {
     LazyRow {
         items(concerts.size) {index ->
             ConcertItem(index)

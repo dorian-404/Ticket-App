@@ -2,21 +2,6 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="ConfirmBooking">
-        <State />
-      </entry>
-      <entry key="EventDetails">
-        <State />
-      </entry>
-      <entry key="TicketBookingScreen">
-        <State />
-      </entry>
-      <entry key="TicketComponent">
-        <State />
-      </entry>
-      <entry key="TicketView">
-        <State />
-      </entry>
       <entry key="app">
         <State />
       </entry>

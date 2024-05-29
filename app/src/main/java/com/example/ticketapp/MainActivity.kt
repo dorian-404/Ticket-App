@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ticketapp.components.HeaderComponent
 import com.example.ticketapp.components.SearchBarSection
-import com.example.ticketapp.models.ConcertsSectionData
 import com.example.ticketapp.ui.theme.TicketAppTheme
 
 import android.app.PendingIntent
@@ -58,6 +57,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.ticketapp.components.EventDetails
 import com.example.ticketapp.components.TicketBookingScreen
 import com.example.ticketapp.components.TicketComponent
+import com.example.ticketapp.data.ConcertSection
+import com.example.ticketapp.database.AppDatabase
+import com.example.ticketapp.models.Event
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -159,6 +163,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun populateDatabase() {
+        val eventDao = AppDatabase.getDatabase(this).eventDao()
+
+        // Créez des instances de Event
+        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
+        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
+        GlobalScope.launch {
+            // Insérez les événements dans la base de données
+            eventDao.insertEvent(event1)
+            eventDao.insertEvent(event2)
+            // Insérez autant d'événements que vous le souhaitez
+        }
+    }
     @Preview(showSystemUi = true)
     @Composable
     fun HomeScreen() {
@@ -181,7 +198,7 @@ class MainActivity : ComponentActivity() {
                     fontSize = 20.sp
                 )
 
-                ConcertsSectionData()
+                ConcertSection()
 
                 Row(
                     modifier = Modifier
