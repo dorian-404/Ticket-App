@@ -16,6 +16,10 @@ interface EventDao {
     """)
     fun getUsersWhoBookedEvent(eventId: Long): List<User>
 
+    @Query("SELECT * FROM events")
+    suspend fun getAllEvents(): List<Event>
+
+
     // Insertion d'un événement OnConflictStrategy.REPLACE permet de remplacer un événement existant
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: Event)

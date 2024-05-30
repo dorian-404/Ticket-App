@@ -45,6 +45,7 @@ import android.content.IntentFilter
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -118,6 +119,10 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+
+        // Appel de la fonction populateDatabase
+        populateDatabase()
+
         // initialisation de l'adaptateur NFC
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
@@ -141,17 +146,20 @@ class MainActivity : ComponentActivity() {
         intentFiltersArray = arrayOf(ndefIntentFilter)
     }
 
+    // lorsque l'appli est en cours d'execution
     override fun onResume() {
         super.onResume()
         // Enregistrement de votre activité pour recevoir les événements NFC
         nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, intentFiltersArray, null)
     }
 
+    // lorsque l'appli est en pause
     override fun onPause() {
         super.onPause()
         // Désenregistrement de l'activité pour recevoir les événements NFC
         nfcAdapter?.disableForegroundDispatch(this)
     }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
@@ -163,17 +171,23 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun populateDatabase() {
+    private fun populateDatabase() {
         val eventDao = AppDatabase.getDatabase(this).eventDao()
 
         // Créez des instances de Event
-        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
-        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
+//        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
+//        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
         GlobalScope.launch {
-            // Insérez les événements dans la base de données
-            eventDao.insertEvent(event1)
-            eventDao.insertEvent(event2)
-            // Insérez autant d'événements que vous le souhaitez
+            // Inserenles événements dans la base de données
+//            eventDao.insertEvent(event1)
+//            eventDao.insertEvent(event2)
+            // Recupere les events de ma db
+            val events = eventDao.getAllEvents()
+
+            // Écrire les événements dans Logcat
+            for (event in events) {
+                Log.d("Database", "Event: $event")
+            }
         }
     }
     @Preview(showSystemUi = true)
