@@ -82,5 +82,24 @@ dependencies {
     // To use Kotlin annotation processing tool (kapt)
     ksp("androidx.room:room-compiler:$room_version")
 
+    // acces à l’API Stripe
+    implementation ("com.stripe:stripe-java:25.0.0")
+
+    // Stripe Android SDK
+    implementation("com.stripe:stripe-android:16.10.0")
+
+    // http library
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+
+    // Gson
+    implementation ("com.google.code.gson:gson:2.10.1")
+
+    // Spark
+    implementation ("com.sparkjava:spark-core:2.9.3")
+
+    // Network library
+    implementation ("com.github.kittinunf.fuel:fuel:2.3.1")
+
+
 
 }

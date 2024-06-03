@@ -1,6 +1,7 @@
 package com.example.ticketapp.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,24 +34,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun TicketBookingScreen() {
+fun TicketBookingScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        TicketBooking()
+        TicketBooking(navController)
         TicketDropdownMenu()
-        TicketOptions()
+        TicketOptions(navController)
     }
 }
 
 @Composable
-fun TicketBooking() {
+fun TicketBooking(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -63,7 +65,7 @@ fun TicketBooking() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Button(
-                onClick = { /* TODO: Handle back button click */ },
+                onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(50),
                 contentPadding = ButtonDefaults.ContentPadding
@@ -83,7 +85,7 @@ fun TicketBooking() {
             )
 
             Button(
-                onClick = { /* TODO: Handle close button click */ },
+                onClick = { /*navController.navigate("tickets") */},
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 shape = RoundedCornerShape(50),
                 contentPadding = ButtonDefaults.ContentPadding
@@ -177,9 +179,9 @@ fun TicketDropdownMenu() {
 
 
 @Composable
-fun TicketOptions() {
+fun TicketOptions(navController: NavController) {
     val tickets = listOf(
-        TicketOption("Sec 21", "Standart Ticket", "$64.50"),
+        TicketOption("Sec 007", "Eren", "$400.50"),
         TicketOption("Sec 12", "VIP Ticket", "$124.00"),
         TicketOption("Sec 13", "VIP Ticket", "$124.00")
     )
@@ -191,13 +193,16 @@ fun TicketOptions() {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         tickets.forEach { ticket ->
-            TicketCard(ticket)
+            TicketCard(ticket) {
+                // Navigate to ConfirmBooking screen with ticket information
+                navController.navigate("confirmBooking/${ticket.section}/${ticket.type}/${ticket.price}")
+            }
         }
     }
 }
 
 @Composable
-fun TicketCard(ticket: TicketOption) {
+fun TicketCard(ticket: TicketOption, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -205,6 +210,7 @@ fun TicketCard(ticket: TicketOption) {
             containerColor = Color.White
         ),
         modifier = Modifier.fillMaxWidth()
+            .clickable(onClick = onClick)
     ) {
         Row(
             modifier = Modifier

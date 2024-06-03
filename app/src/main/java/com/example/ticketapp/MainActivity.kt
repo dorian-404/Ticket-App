@@ -55,12 +55,14 @@ import androidx.compose.ui.Alignment
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ticketapp.components.ConfirmBooking
 import com.example.ticketapp.components.EventDetails
 import com.example.ticketapp.components.TicketBookingScreen
 import com.example.ticketapp.components.TicketComponent
 import com.example.ticketapp.data.ConcertSection
 import com.example.ticketapp.database.AppDatabase
 import com.example.ticketapp.models.Event
+import com.stripe.android.PaymentConfiguration
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -144,6 +146,12 @@ class MainActivity : ComponentActivity() {
             }
         }
         intentFiltersArray = arrayOf(ndefIntentFilter)
+
+        // Initialisation de la configuration de paiement Stripe
+        PaymentConfiguration.init(
+            applicationContext,
+            "pk_test_51PMBiqHhqi17tliDpXxmLr01lMit5ukwVxu3WjGhtftikvfdSIWxyG1vnOhebN5M4pexbpY9q8yaUtm4fIN2wHbK00RMV0y6Vj"
+        )
     }
 
     // lorsque l'appli est en cours d'execution
@@ -252,7 +260,18 @@ class MainActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = "ticketComponent") {
             composable("ticketComponent") { TicketComponent(navController) }
             composable("eventDetails") { EventDetails(navController) }
-            composable("ticketBooking") { TicketBookingScreen() }
+            composable("ticketBooking") { TicketBookingScreen(navController) }
+            composable("confirmBooking/{section}/{type}/{price}") { backStackEntry ->
+                val section = backStackEntry.arguments?.getString("section")
+                val type = backStackEntry.arguments?.getString("type")
+                val price = backStackEntry.arguments?.getString("price")
+                if (section != null && type != null && price != null) {
+                    ConfirmBooking(navController, section, type, price)
+                } else {
+                    // Handle error
+                }
+            }
+            //composable("tickets") { TicketsScreen(navController) }
         }
     }
 

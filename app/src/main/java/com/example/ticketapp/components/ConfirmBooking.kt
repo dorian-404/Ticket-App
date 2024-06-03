@@ -15,10 +15,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
-fun ConfirmBooking() {
+fun ConfirmBooking(navController: NavController, section: String, type: String, price: String) {
     val paddingValue = 16.dp
     val spacingValue = 24.dp
 
@@ -30,7 +31,7 @@ fun ConfirmBooking() {
         verticalArrangement = Arrangement.Top,
     ) {
         BookingTitle()
-        EventCard()
+        EventCard(section, type, price)
         Spacer(modifier = Modifier.height(spacingValue))
         SubtotalCard()
         Spacer(modifier = Modifier.height(spacingValue))
@@ -51,7 +52,7 @@ fun BookingTitle() {
 }
 
 @Composable
-fun EventCard() {
+fun EventCard(section: String, type: String, price: String) {
     Card(
         modifier = Modifier
             .width(300.dp)
@@ -66,9 +67,9 @@ fun EventCard() {
             Text(text = "Friday • June 21 • 19.00 - 22.00")
             Spacer(modifier = Modifier.height(10.dp))
             Text(text = "Standart Ticket", color = Color.Gray)
-            Text(text = "CA $64.50", fontWeight = FontWeight.Light)
+            Text(text = "CA $${price}", fontWeight = FontWeight.Light)
             Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "VIP Ticket", color = Color.Gray)
+            Text(text = "VIP $section", color = Color.Gray)
             Text(text = "CA $124.50", fontWeight = FontWeight.Light)
         }
     }
