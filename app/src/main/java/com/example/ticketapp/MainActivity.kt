@@ -1,5 +1,6 @@
 package com.example.ticketapp
 
+import ConfirmBooking
 import EventsSection
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -55,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ticketapp.components.ConfirmBooking
 import com.example.ticketapp.components.EventDetails
 import com.example.ticketapp.components.TicketBookingScreen
 import com.example.ticketapp.components.TicketComponent
