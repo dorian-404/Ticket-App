@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ticketapp.PaymentActivity
-import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -148,15 +147,19 @@ fun ConfirmButton(context: android.content.Context, paymentIntentClientSecret: S
 
 private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { continuation ->
     val url = "http://10.0.2.2:4242/create-payment-intent"
-
+    val ticketPrice = 15000 // Remplacez par la valeur réelle
+    val ticketQuantity = 2
     val shoppingCartContent = """
         {
             "items": [
-                 {"ticketId":"123", "quantity":2}
+                 {"ticketId":"123",
+                    "price": $ticketPrice,
+                    "quantity": $ticketQuantity
+                 }
             ]
         }
     """
-
+    //
     val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
     val body = shoppingCartContent.toRequestBody(mediaType)
     val request = Request.Builder()
