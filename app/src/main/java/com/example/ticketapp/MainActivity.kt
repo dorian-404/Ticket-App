@@ -183,14 +183,18 @@ class MainActivity : ComponentActivity() {
         val eventDao = AppDatabase.getDatabase(this).eventDao()
 
         // Créez des instances de Event
-//        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
-//        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
+        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
+        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
         GlobalScope.launch {
             // Inserenles événements dans la base de données
 //            eventDao.insertEvent(event1)
 //            eventDao.insertEvent(event2)
             // Recupere les events de ma db
             val events = eventDao.getAllEvents()
+
+            // Supprimer un événement
+              eventDao.deleteEvent(event1)
+
 
             // Écrire les événements dans Logcat
             for (event in events) {

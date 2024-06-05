@@ -1,6 +1,7 @@
 package com.example.ticketapp.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -16,6 +17,12 @@ interface EventDao {
     """)
     fun getUsersWhoBookedEvent(eventId: Long): List<User>
 
+
+    @Delete
+    public fun deleteEvent(event: Event)
+
+
+    // Récupération de tous les événements
     @Query("SELECT * FROM events")
     suspend fun getAllEvents(): List<Event>
 
