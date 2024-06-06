@@ -65,6 +65,8 @@ import com.example.ticketapp.components.TicketComponent
 import com.example.ticketapp.data.ConcertSection
 import com.example.ticketapp.database.AppDatabase
 import com.example.ticketapp.models.Event
+import com.example.ticketapp.models.Ticket
+import com.example.ticketapp.models.User
 import com.example.ticketapp.repository.EventRepository
 import com.example.ticketapp.viewmodel.EventViewModel
 import com.stripe.android.PaymentConfiguration
@@ -212,6 +214,47 @@ class MainActivity : ComponentActivity() {
 ////                Log.d("Database", "Event: $event")
 ////            }
 //        }
+
+        // remplir les donnees pour ma table ticket
+        val ticketDao = AppDatabase.getDatabase(this).ticketDao()
+
+        // remplir les donneees pour ma table user
+         val userDao = AppDatabase.getDatabase(this).userDao()
+
+        // creer des instances de User
+        val user1 = User(userId = 1, firstName = "John", lastName = "Doe", email = "johndoe@gamil.com", password = "123456")
+        val user2 = User(userId = 2, firstName = "Jane", lastName = "Doe", email = "janedoe@gamil.com", password = "123456")
+        val user3 = User(userId = 3, firstName = "Alice", lastName = "Doe", email = "alice@gmail.com", password = "102030")
+        // creer des instances de Ticket
+        val ticket1 = Ticket(ticketId = 1, typeTicket = "Standard", price = 36.50, seatNumber = 12, section = 9, nbreTickets = 5)
+        val ticket2 = Ticket(ticketId = 2, typeTicket = "VIP", price = 124.50, seatNumber = 5, section = 1, nbreTickets = 5)
+        val ticket3 = Ticket(ticketId = 3, typeTicket = "Standard", price = 65.50, seatNumber = 18, section = 5, nbreTickets = 5)
+        val ticket4 = Ticket(ticketId = 4, typeTicket = "VIP", price = 154.50, seatNumber = 9, section = 2, nbreTickets = 5)
+        val ticket5 = Ticket(ticketId = 5, typeTicket = "Standard", price = 40.50, seatNumber = 15, section = 10, nbreTickets = 5)
+        val ticket6 = Ticket(ticketId = 6, typeTicket = "VIP", price = 118.50, seatNumber = 8, section = 3, nbreTickets = 5)
+        val ticket7 = Ticket(ticketId = 7, typeTicket = "Standard", price = 60.50, seatNumber = 21, section = 9, nbreTickets = 5)
+        val ticket8 = Ticket(ticketId = 8, typeTicket = "VIP", price = 185.50, seatNumber = 7, section = 1, nbreTickets = 5)
+        val ticket9 = Ticket(ticketId = 9, typeTicket = "Standard", price = 56.50, seatNumber = 11, section = 10, nbreTickets = 5)
+        val ticket10 = Ticket(ticketId = 10, typeTicket = "VIP", price = 150.50, seatNumber = 8, section = 2, nbreTickets = 5)
+        GlobalScope.launch {
+            // Inserer les tickets dans la base de donnees
+//            ticketDao.insertTicket(ticket1)
+//            ticketDao.insertTicket(ticket2)
+//            ticketDao.insertTicket(ticket3)
+//            ticketDao.insertTicket(ticket4)
+//            ticketDao.insertTicket(ticket5)
+//            ticketDao.insertTicket(ticket6)
+//            ticketDao.insertTicket(ticket7)
+//            ticketDao.insertTicket(ticket8)
+//            ticketDao.insertTicket(ticket9)
+//            ticketDao.insertTicket(ticket10)
+
+            // Inserer les users dans la base de donnees
+            userDao.insert(user1)
+            userDao.insert(user2)
+            userDao.insert(user3)
+
+        }
     }
     //@Preview(showSystemUi = true)
     @Composable
