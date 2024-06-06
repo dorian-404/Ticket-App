@@ -9,6 +9,8 @@ import androidx.room.Transaction
 import com.example.ticketapp.models.Event
 import com.example.ticketapp.models.User
 import com.example.ticketapp.relations.EventWithBookings
+import com.example.ticketapp.relations.EventWithTickets
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface EventDao {
@@ -32,10 +34,17 @@ interface EventDao {
 
     // Récupération de tous les événements
     @Query("SELECT * FROM events")
-    suspend fun getAllEvents(): List<Event>
+    fun getAllEvents(): Flow<List<Event>>
 
 
     // Insertion d'un événement OnConflictStrategy.REPLACE permet de remplacer un événement existant
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: Event)
+
+
+    // Récupération d'un événement avec les tickets
+    @Transaction
+    @Query("SELECT * FROM events WHERE eventId = :eventId")
+    suspend fun getEventWithTickets(eventId: Int): EventWithTickets?
+
 }

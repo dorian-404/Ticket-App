@@ -47,12 +47,15 @@ import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -62,9 +65,12 @@ import com.example.ticketapp.components.TicketComponent
 import com.example.ticketapp.data.ConcertSection
 import com.example.ticketapp.database.AppDatabase
 import com.example.ticketapp.models.Event
+import com.example.ticketapp.repository.EventRepository
+import com.example.ticketapp.viewmodel.EventViewModel
 import com.stripe.android.PaymentConfiguration
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import com.example.ticketapp.viewmodel.EventViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
@@ -72,6 +78,11 @@ class MainActivity : ComponentActivity() {
     private var nfcAdapter: NfcAdapter? = null
     private lateinit var nfcPendingIntent: PendingIntent
     private lateinit var intentFiltersArray: Array<IntentFilter>
+    private val eventDao by lazy { AppDatabase.getDatabase(this).eventDao() }
+    private val repository by lazy { EventRepository(eventDao) }
+    private val eventViewModel: EventViewModel by viewModels {
+        EventViewModelFactory(repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,91 +191,87 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun populateDatabase() {
-        val eventDao = AppDatabase.getDatabase(this).eventDao()
+       // val eventDao = AppDatabase.getDatabase(this).eventDao()
 
         // Créez des instances de Event
-        val event1 = Event(eventId = 1, name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Terre")
-        val event2 = Event(eventId = 2,  name = "Nom de l'événement", description = "Loremdjdeere", dateTime = "eee", location = "Location 2")
-        GlobalScope.launch {
-            // Inserenles événements dans la base de données
-//            eventDao.insertEvent(event1)
-//            eventDao.insertEvent(event2)
-            // Recupere les events de ma db
-            val events = eventDao.getAllEvents()
-
-            // Supprimer un événement
-              eventDao.deleteEvent(event1)
-
-
-            // Écrire les événements dans Logcat
-            for (event in events) {
-                Log.d("Database", "Event: $event")
-            }
-        }
+//        val event1 = Event(eventId = 1, name = "Les Ardentes", description = " Les Ardentes Festival in Moncton is a must for music fans. Every year, this event brings together internationally renowned artists and emerging talents, offering an eclectic programme ranging from rap and rock to electro and pop.", dateTime = "21-23 Juin 2024", location = "123 Rue Main, Street Moncton")
+//        val event2 = Event(eventId = 2,  name = "Festival Mural", description = "he Mural Festival is an annual event celebrating urban art and creativity, attracting artists from around the world to transform public spaces with vibrant, large-scale murals. Held in a dynamic city environment, the festival features live painting sessions, art exhibitions, workshops, and interactive installations. It aims to engage the community, promote cultural exchange, and rejuvenate urban landscapes through the power of art. ", dateTime = "10-22 Juin 2024", location = "67 Rue Main,  Bathurst K.C Irving")
+//        GlobalScope.launch {
+//            // Inserenles événements dans la base de données
+////           eventDao.insertEvent(event1)
+////           eventDao.insertEvent(event2)
+//            // Recupere les events de ma db
+////            val events = eventDao.getAllEvents()
+//
+//            // Supprimer un événement
+//             // eventDao.deleteEvent(event2)
+//
+//
+//            // Écrire les événements dans Logcat
+////            for (event in events) {
+////                Log.d("Database", "Event: $event")
+////            }
+//        }
     }
-    @Preview(showSystemUi = true)
+    //@Preview(showSystemUi = true)
     @Composable
     fun HomeScreen() {
 
-        LazyColumn {
-
-            item {
-                HeaderComponent()
-
-                SearchBarSection()
-
-                // Spacer
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "Upcoming Events",
-                    modifier = Modifier
-                        .padding(16.dp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    fontSize = 20.sp
-                )
-
-                ConcertSection()
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Recommended Events",
-                        modifier = Modifier
-                            .padding(16.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                    TextButton(onClick = { /* Handle See All click */ }) {
-                        Text(
-                            text = "See all",
-                            color = Color.Blue,
-                            fontWeight = FontWeight.Medium
-                        )
-                    }
-                }
-            }
-
-            item { EventsSection() }
-
-            item { EventsSection() }
-        }
-    }
-
-    @Preview(showSystemUi = true)
-    @Composable
-    fun TicketScreen() {
-
         val navController = rememberNavController()
 
-        NavHost(navController = navController, startDestination = "ticketComponent") {
-            composable("ticketComponent") { TicketComponent(navController) }
-            composable("eventDetails") { EventDetails(navController) }
+        NavHost(navController = navController, startDestination = "home") {
+            // Navigation vers la page d'accueil
+            composable("home") {
+                LazyColumn {
+                    item {
+                        HeaderComponent()
+                        SearchBarSection()
+                        // Spacer
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "Upcoming Events",
+                            modifier = Modifier.padding(16.dp),
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            fontSize = 20.sp
+                        )
+                        ConcertSection()
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Recommended Events",
+                                modifier = Modifier.padding(16.dp),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp
+                            )
+                            TextButton(onClick = { /* rien a faire pour le moment */ }) {
+                                Text(
+                                    text = "See all",
+                                    color = Color.Blue,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                    item { EventsSection(eventViewModel = eventViewModel, navController = navController) }
+                }
+            }
+            // Navigation vers la page de détails de l'événement
+            composable("eventDetails/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                if (eventId != null) {
+                    EventDetails(navController, eventId, eventViewModel)
+                } else {
+                    // Handle error
+                }
+            }
+            // Navigation vers la page de réservation de billets
             composable("ticketBooking") { TicketBookingScreen(navController) }
+
+            // Navigation vers la page de confirmation de réservation
             composable("confirmBooking/{section}/{type}/{price}") { backStackEntry ->
                 val section = backStackEntry.arguments?.getString("section")
                 val type = backStackEntry.arguments?.getString("type")
@@ -275,8 +282,19 @@ class MainActivity : ComponentActivity() {
                     // Handle error
                 }
             }
-            //composable("tickets") { TicketsScreen(navController) }
         }
+    }
+
+    @Preview(showSystemUi = true)
+    @Composable
+    fun TicketScreen() {
+
+        val navController = rememberNavController()
+
+        NavHost(navController = navController, startDestination = "ticketComponent") {
+            composable("ticketComponent") { TicketComponent(navController)  }
+        }
+
     }
 
     @Composable

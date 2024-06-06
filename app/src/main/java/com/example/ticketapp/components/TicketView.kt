@@ -95,7 +95,7 @@ fun TicketView() {
                         .height(50.dp)
                         .background(Color.Gray)
                 ) {
-                    // Placeholder for the barcode
+                    // barcode
                     BasicText(
                         text = "|||||||||||||||||||||||||||||||||||",
                         modifier = Modifier.align(Alignment.Center)

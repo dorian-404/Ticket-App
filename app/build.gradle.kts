@@ -104,5 +104,9 @@ dependencies {
     // expresso
     //androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
+    // LiveData
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
+
 
 }

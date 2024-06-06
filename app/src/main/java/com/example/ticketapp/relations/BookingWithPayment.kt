@@ -9,7 +9,7 @@ import com.example.ticketapp.models.Payment
 data class BookingWithPayment(
     @Embedded val booking: Booking,
     @Relation(
-        parentColumn = "booKingId",
+        parentColumn = "bookingId",
         entityColumn = "bookingId"
     )
     val payment: Payment

@@ -61,8 +61,7 @@ fun TicketComponent(navController: NavController) {
             date = "19 Juin 2024",
             time = "11.00 - 20.00",
             location = "Bathurst",
-            tickets = "2 Tickets",
-            navController = navController
+            tickets = "2 Tickets"
         )
         Spacer(modifier = Modifier.height(16.dp))
         TicketCard(
@@ -71,8 +70,7 @@ fun TicketComponent(navController: NavController) {
             date = "19 Juin 2024",
             time = "11.00 - 20.00",
             location = "Bathurst",
-            tickets = "2 Tickets",
-            navController = navController
+            tickets = "2 Tickets"
         )
     }
 
@@ -96,14 +94,12 @@ fun TicketCard(
     date: String,
     time: String,
     location: String,
-    tickets: String,
-    navController: NavController
-) {
+    tickets: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
-            .clickable { navController.navigate("eventDetails") },
+            .height(160.dp),
+            //.clickable { navController.navigate("eventDetails/1") },
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(4.dp),
         colors = CardDefaults.cardColors(

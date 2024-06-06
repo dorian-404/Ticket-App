@@ -145,11 +145,12 @@ fun ConfirmButton(context: android.content.Context, paymentIntentClientSecret: S
 }
 
 
+// Methode permettant de recuperer le client secret du serveur
 private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { continuation ->
     val url = "http://10.0.2.2:4242/create-payment-intent"
-    val ticketPrice = 15000 // Remplacez par la valeur réelle
+    val ticketPrice = 15000 // valeur test a changer
     val ticketQuantity = 2
-    val shoppingCartContent = """
+    val ticketBooked = """
         {
             "items": [
                  {"ticketId":"123",
@@ -159,14 +160,15 @@ private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { co
             ]
         }
     """
-    //
+    // requete post
     val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-    val body = shoppingCartContent.toRequestBody(mediaType)
+    val body = ticketBooked .toRequestBody(mediaType)
     val request = Request.Builder()
         .url(url)
         .post(body)
         .build()
 
+    // creer une instance de OkHttpClient et ensuite on prepare la requete
     OkHttpClient()
         .newCall(request)
         .enqueue(object : Callback {
@@ -195,6 +197,7 @@ private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { co
         })
 }
 
+// extraire le client secret de la reponse provenant du serveur
 private fun extractClientSecretFromResponse(response: Response): String? {
     return try {
         val responseData = response.body?.string()

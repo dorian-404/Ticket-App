@@ -5,10 +5,13 @@
       <entry key="CheckoutActivity">
         <State />
       </entry>
+      <entry key="ConcertSection">
+        <State />
+      </entry>
       <entry key="ConfirmBooking">
         <State />
       </entry>
-      <entry key="Payementevent">
+      <entry key="SearchBarSection">
         <State />
       </entry>
       <entry key="app">

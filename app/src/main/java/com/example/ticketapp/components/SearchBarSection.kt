@@ -29,6 +29,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SearchBarSection() {
 
+    //  Utilisation de la fonction remember pour conserve l'état de la recherche
+    // Utilisation de la fonction mutableStateOf pour faire le suivi de l'état du champ de recherche
+    // Note : textState est une variable mutable qui contient la valeur du champ de recherche
         val textState = remember {
             mutableStateOf(TextFieldValue())
         }

@@ -6,7 +6,7 @@ import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "payments",
+    tableName = "payment",
     foreignKeys = [
         ForeignKey(
             entity = Booking::class,

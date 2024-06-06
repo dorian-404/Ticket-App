@@ -17,6 +17,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,26 +33,31 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.ticketapp.R
+import com.example.ticketapp.models.Event
+import com.example.ticketapp.relations.EventWithTickets
+import com.example.ticketapp.viewmodel.EventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun EventDetails(navController: NavController) {
-    val paddingValue = 10.dp
-    val spacingValue = 16.dp
+fun EventDetails(navController: NavController, eventId: Int, eventViewModel: EventViewModel) {
+    val eventWithTickets by eventViewModel.getEventWithTickets(eventId).observeAsState(null)
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item { EventImage(navController) }
-        item { Spacer(modifier = Modifier.height(spacingValue)) }
-        item { EventDescription(paddingValue = paddingValue) }
-        item { EventInformation(paddingValue = paddingValue) }
-        item { Spacer(modifier = Modifier.height(spacingValue)) }
-        item { BuyTicketButton(spacingValue = spacingValue, navController = navController) }
+    eventWithTickets?.let { eventWithTickets ->
+        val event = eventWithTickets.event
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item { EventImage(navController, event) } // Pass event to EventImage
+            item { Spacer(modifier = Modifier.height(10.dp)) }
+            item { EventDescription(event.description) }
+            item { EventInformation(event.location, event.dateTime) }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { BuyTicketButton(16.dp, navController) }
+        }
     }
 }
 
 @Composable
-fun EventImage(navController: NavController) {
+fun EventImage(navController: NavController, event: Event) { // Add event as a parameter
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -85,12 +95,12 @@ fun EventImage(navController: NavController) {
                 tint = Color.White
             )
         }
-        EventDetailsOverlay()
+        EventDetailsOverlay(event) // Pass event to EventDetailsOverlay
     }
 }
 
 @Composable
-fun EventDetailsOverlay() {
+fun EventDetailsOverlay(event: Event) { // Add event as a parameter
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -101,12 +111,12 @@ fun EventDetailsOverlay() {
             verticalArrangement = Arrangement.spacedBy(4.dp) // Espacement de 4dp entre les éléments
         ) {
             Text(
-                "Les Ardentes",
+                event.name, // Use event name
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
             Text(
-                "CA\$45.00 - CA\$175.00",
+                event.name, // Use event price
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.White
             )
@@ -115,20 +125,16 @@ fun EventDetailsOverlay() {
 }
 
 @Composable
-fun EventDescription(paddingValue: Dp) {
-    Text(modifier = Modifier.padding(paddingValue), text = "Description", style = MaterialTheme.typography.headlineSmall)
-    Text(modifier = Modifier.padding(paddingValue), text =
-    "Every year, this event brings together internationally renowned artists and emerging talents, offering an eclectic programme ranging from rap and rock to electro and pop.",
-        style = MaterialTheme.typography.bodyMedium
-    )
+fun EventDescription(description: String) {
+    Text(modifier = Modifier.padding(16.dp), text = "Description", style = MaterialTheme.typography.headlineSmall)
+    Text(modifier = Modifier.padding(16.dp), text = description, style = MaterialTheme.typography.bodyMedium)
 }
 
 @Composable
-fun EventInformation(paddingValue: Dp) {
-    Text(modifier = Modifier.padding(paddingValue), text = "Informations", style = MaterialTheme.typography.headlineSmall)
-    Text(modifier = Modifier.padding(paddingValue), text = "123 Rue Main, Street Moncton", style = MaterialTheme.typography.bodyMedium)
-    Text(modifier = Modifier.padding(paddingValue), text = "19.00-22.00", style = MaterialTheme.typography.bodyMedium)
-    Text(modifier = Modifier.padding(paddingValue), text = "21-23 Juin 2024", style = MaterialTheme.typography.bodyMedium)
+fun EventInformation(location: String, dateTime: String) {
+    Text(modifier = Modifier.padding(16.dp), text = "Informations", style = MaterialTheme.typography.headlineSmall)
+    Text(modifier = Modifier.padding(16.dp), text = location, style = MaterialTheme.typography.bodyMedium)
+    Text(modifier = Modifier.padding(16.dp), text = dateTime, style = MaterialTheme.typography.bodyMedium)
 }
 
 @Composable
@@ -152,4 +158,3 @@ fun BuyTicketButton(spacingValue: Dp, navController: NavController) {
         }
     }
 }
-
