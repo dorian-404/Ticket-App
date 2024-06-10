@@ -7,6 +7,7 @@ import com.example.ticketapp.models.Booking
 import com.example.ticketapp.models.Event
 import com.example.ticketapp.models.User
 
+// Relation de 1 a plusieurs entre User et Booking : pour savoir quels events a reserve un user
 data class UserWithBookings(
     @Embedded val user: User,
     @Relation(

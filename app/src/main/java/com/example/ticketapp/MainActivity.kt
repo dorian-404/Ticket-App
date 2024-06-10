@@ -46,16 +46,14 @@ import android.content.IntentFilter
 import android.nfc.NdefMessage
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
-import androidx.navigation.NavController
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -68,11 +66,15 @@ import com.example.ticketapp.models.Event
 import com.example.ticketapp.models.Ticket
 import com.example.ticketapp.models.User
 import com.example.ticketapp.repository.EventRepository
+import com.example.ticketapp.repository.TicketRepository
 import com.example.ticketapp.viewmodel.EventViewModel
 import com.stripe.android.PaymentConfiguration
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import com.example.ticketapp.viewmodel.EventViewModelFactory
+import com.example.ticketapp.viewmodel.TicketViewModel
+import com.example.ticketapp.viewmodel.TicketViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -81,11 +83,13 @@ class MainActivity : ComponentActivity() {
     private lateinit var nfcPendingIntent: PendingIntent
     private lateinit var intentFiltersArray: Array<IntentFilter>
     private val eventDao by lazy { AppDatabase.getDatabase(this).eventDao() }
-    private val repository by lazy { EventRepository(eventDao) }
+    private val ticketDao by lazy { AppDatabase.getDatabase(this).ticketDao() }
+    private val eventRepository by lazy { EventRepository(eventDao) }
+    private val ticketRepository by lazy { TicketRepository(ticketDao) }
     private val eventViewModel: EventViewModel by viewModels {
-        EventViewModelFactory(repository)
+        EventViewModelFactory(eventRepository)
     }
-
+    val viewModel: TicketViewModel by viewModels { TicketViewModelFactory(ticketRepository) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -136,7 +140,8 @@ class MainActivity : ComponentActivity() {
         }
 
         // Appel de la fonction populateDatabase
-        populateDatabase()
+            populateDatabase()
+
 
         // initialisation de l'adaptateur NFC
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
@@ -193,15 +198,24 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun populateDatabase() {
-       // val eventDao = AppDatabase.getDatabase(this).eventDao()
+        val eventDao = AppDatabase.getDatabase(this).eventDao()
 
         // Créez des instances de Event
-//        val event1 = Event(eventId = 1, name = "Les Ardentes", description = " Les Ardentes Festival in Moncton is a must for music fans. Every year, this event brings together internationally renowned artists and emerging talents, offering an eclectic programme ranging from rap and rock to electro and pop.", dateTime = "21-23 Juin 2024", location = "123 Rue Main, Street Moncton")
-//        val event2 = Event(eventId = 2,  name = "Festival Mural", description = "he Mural Festival is an annual event celebrating urban art and creativity, attracting artists from around the world to transform public spaces with vibrant, large-scale murals. Held in a dynamic city environment, the festival features live painting sessions, art exhibitions, workshops, and interactive installations. It aims to engage the community, promote cultural exchange, and rejuvenate urban landscapes through the power of art. ", dateTime = "10-22 Juin 2024", location = "67 Rue Main,  Bathurst K.C Irving")
+        val event1 = Event(eventId = 1, name = "Les Ardentes", description = " Les Ardentes Festival in Moncton is a " +
+                "must for music fans. Every year, this event brings together " +
+                "internationally renowned artists and emerging talents, " +
+                "offering an eclectic programme ranging " +
+                "from rap and rock to electro and pop.", date= "21-23 Juin 2024", hour= "19h - 23h", location = "123 Rue Main, Street Moncton")
+
+        val event2 = Event(eventId = 2,  name = "Festival Mural", description = "he Mural Festival is an annual event celebrating urban " +
+                "art and creativity, attracting artists from around the world to transform public spaces with vibrant, " +
+                "large-scale murals. Held in a dynamic city environment, " +
+                "the festival features live painting sessions, art exhibitions, " +
+                "workshops, and interactive installations. It aims to engage the community, " +
+                "promote cultural exchange, and rejuvenate urban landscapes through the power of art. ", date = "10-22 Juin 2024", hour="16h00 - 22h00", location = "67 Rue Main,  Bathurst K.C Irving")
 //        GlobalScope.launch {
 //            // Inserenles événements dans la base de données
-////           eventDao.insertEvent(event1)
-////           eventDao.insertEvent(event2)
+
 //            // Recupere les events de ma db
 ////            val events = eventDao.getAllEvents()
 //
@@ -219,41 +233,45 @@ class MainActivity : ComponentActivity() {
         val ticketDao = AppDatabase.getDatabase(this).ticketDao()
 
         // remplir les donneees pour ma table user
-         val userDao = AppDatabase.getDatabase(this).userDao()
+         //val userDao = AppDatabase.getDatabase(this).userDao()
 
         // creer des instances de User
         val user1 = User(userId = 1, firstName = "John", lastName = "Doe", email = "johndoe@gamil.com", password = "123456")
         val user2 = User(userId = 2, firstName = "Jane", lastName = "Doe", email = "janedoe@gamil.com", password = "123456")
         val user3 = User(userId = 3, firstName = "Alice", lastName = "Doe", email = "alice@gmail.com", password = "102030")
         // creer des instances de Ticket
-        val ticket1 = Ticket(ticketId = 1, typeTicket = "Standard", price = 36.50, seatNumber = 12, section = 9, nbreTickets = 5)
-        val ticket2 = Ticket(ticketId = 2, typeTicket = "VIP", price = 124.50, seatNumber = 5, section = 1, nbreTickets = 5)
-        val ticket3 = Ticket(ticketId = 3, typeTicket = "Standard", price = 65.50, seatNumber = 18, section = 5, nbreTickets = 5)
-        val ticket4 = Ticket(ticketId = 4, typeTicket = "VIP", price = 154.50, seatNumber = 9, section = 2, nbreTickets = 5)
-        val ticket5 = Ticket(ticketId = 5, typeTicket = "Standard", price = 40.50, seatNumber = 15, section = 10, nbreTickets = 5)
-        val ticket6 = Ticket(ticketId = 6, typeTicket = "VIP", price = 118.50, seatNumber = 8, section = 3, nbreTickets = 5)
-        val ticket7 = Ticket(ticketId = 7, typeTicket = "Standard", price = 60.50, seatNumber = 21, section = 9, nbreTickets = 5)
-        val ticket8 = Ticket(ticketId = 8, typeTicket = "VIP", price = 185.50, seatNumber = 7, section = 1, nbreTickets = 5)
-        val ticket9 = Ticket(ticketId = 9, typeTicket = "Standard", price = 56.50, seatNumber = 11, section = 10, nbreTickets = 5)
-        val ticket10 = Ticket(ticketId = 10, typeTicket = "VIP", price = 150.50, seatNumber = 8, section = 2, nbreTickets = 5)
-        GlobalScope.launch {
-            // Inserer les tickets dans la base de donnees
-//            ticketDao.insertTicket(ticket1)
-//            ticketDao.insertTicket(ticket2)
-//            ticketDao.insertTicket(ticket3)
-//            ticketDao.insertTicket(ticket4)
-//            ticketDao.insertTicket(ticket5)
-//            ticketDao.insertTicket(ticket6)
-//            ticketDao.insertTicket(ticket7)
-//            ticketDao.insertTicket(ticket8)
-//            ticketDao.insertTicket(ticket9)
-//            ticketDao.insertTicket(ticket10)
+        val ticket1 = Ticket(ticketId = 1, eventCreatorId = 1, typeTicket = "Standard", price = 36.50, seatNumber = 12, section = "A9")
+        val ticket2 = Ticket(ticketId = 2, eventCreatorId = 2,typeTicket = "VIP", price = 124.50, seatNumber = 5, section = "C2")
+        val ticket3 = Ticket(ticketId = 3,  eventCreatorId = 2, typeTicket = "Standard", price = 65.50, seatNumber = 18, section = "B1")
+        val ticket4 = Ticket(ticketId = 4,  eventCreatorId = 1, typeTicket = "VIP", price = 154.50, seatNumber = 9, section = "B2")
+        val ticket5 = Ticket(ticketId = 5,  eventCreatorId = 1, typeTicket = "Standard", price = 40.50, seatNumber = 15, section = "A1")
+        val ticket6 = Ticket(ticketId = 6,  eventCreatorId = 2 , typeTicket = "VIP", price = 118.50, seatNumber = 8, section = "C3")
+        val ticket7 = Ticket(ticketId = 7,  eventCreatorId = 2 , typeTicket = "Standard", price = 60.50, seatNumber = 21, section = "A1")
+        val ticket8 = Ticket(ticketId = 8,  eventCreatorId = 1 , typeTicket = "VIP", price = 185.50, seatNumber = 7, section = "D5")
+        val ticket9 = Ticket(ticketId = 9,  eventCreatorId = 1 , typeTicket = "Standard", price = 56.50, seatNumber = 11, section = "H2")
+        val ticket10 = Ticket(ticketId = 10, eventCreatorId = 2, typeTicket = "VIP", price = 150.50, seatNumber = 8, section = "G7")
+        lifecycleScope.launch {
+            withContext(Dispatchers.IO) {
+                // Inserer les tickets dans la base de donnees
+                ticketDao.insertTicket(ticket1)
+                ticketDao.insertTicket(ticket2)
+                ticketDao.insertTicket(ticket3)
+                ticketDao.insertTicket(ticket4)
+                ticketDao.insertTicket(ticket5)
+                ticketDao.insertTicket(ticket6)
+                ticketDao.insertTicket(ticket7)
+                ticketDao.insertTicket(ticket8)
+                ticketDao.insertTicket(ticket9)
+                ticketDao.insertTicket(ticket10)
 
-            // Inserer les users dans la base de donnees
-            userDao.insert(user1)
-            userDao.insert(user2)
-            userDao.insert(user3)
-
+                // Inserer les users dans la base de donnees
+//                userDao.insert(user1)
+//                userDao.insert(user2)
+//                userDao.insert(user3)
+//
+//                eventDao.insertEvent(event1)
+//                eventDao.insertEvent(event2)
+            }
         }
     }
     //@Preview(showSystemUi = true)
@@ -312,15 +330,28 @@ class MainActivity : ComponentActivity() {
                 }
             }
             // Navigation vers la page de réservation de billets
-            composable("ticketBooking") { TicketBookingScreen(navController) }
+            // composable("ticketBooking") { TicketBookingScreen(navController) }
+            // Navigation vers la page de réservation de billets
+            composable("ticketBooking/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                if (eventId != null) {
+                    TicketBookingScreen(navController, eventId, ticketDao, eventRepository)
+                } else {
+                    // Gérer l'erreur
+                }
+            }
 
             // Navigation vers la page de confirmation de réservation
-            composable("confirmBooking/{section}/{type}/{price}") { backStackEntry ->
-                val section = backStackEntry.arguments?.getString("section")
-                val type = backStackEntry.arguments?.getString("type")
-                val price = backStackEntry.arguments?.getString("price")
-                if (section != null && type != null && price != null) {
-                    ConfirmBooking(navController, section, type, price)
+            composable("confirmBooking/{eventId}/{eventName}/{eventDate}/{eventHour}/{ticketPrice}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId")?.toIntOrNull()
+                val eventName = backStackEntry.arguments?.getString("eventName")
+                val eventDate = backStackEntry.arguments?.getString("eventDate")
+                val eventHour = backStackEntry.arguments?.getString("eventHour")
+                val ticketPrice = backStackEntry.arguments?.getString("ticketPrice")?.toDoubleOrNull()
+                if (eventId != null && eventName != null && eventDate != null && eventHour != null) {
+                    if (ticketPrice != null) {
+                        ConfirmBooking(navController, eventName, eventDate, eventHour, ticketPrice)
+                    }
                 } else {
                     // Handle error
                 }

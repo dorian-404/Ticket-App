@@ -7,12 +7,12 @@ import com.example.ticketapp.models.Booking
 import com.example.ticketapp.models.Event
 import com.example.ticketapp.models.Ticket
 
+// Relation de 1 a plusieurs entre Event et Ticket
 data class EventWithTickets(
     @Embedded val event: Event,
     @Relation(
         parentColumn = "eventId",
-        entityColumn = "ticketId",
-        associateBy = Junction(Booking::class)
+        entityColumn = "eventCreatorId"
     )
     val tickets: List<Ticket>
 )

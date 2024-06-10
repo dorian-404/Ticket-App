@@ -43,7 +43,7 @@ fun EventsSection(eventViewModel: EventViewModel, navController: NavController) 
                 EventCard(
                     imageRes = R.drawable.festival,
                     title = event.name,
-                    dateAndLocation = event.dateTime,
+                    dateAndLocation = event.date + " - " + event.location,
                     eventId = event.eventId,
                     navController = navController
                 )

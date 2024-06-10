@@ -1,6 +1,7 @@
 package com.example.ticketapp.viewmodel
 
 import androidx.lifecycle.*
+import com.example.ticketapp.dao.EventDao
 import com.example.ticketapp.models.Event
 import com.example.ticketapp.relations.EventWithTickets
 import com.example.ticketapp.repository.EventRepository
@@ -9,7 +10,13 @@ import kotlinx.coroutines.launch
 // la ViewModel permet de gerer la partie logique de l'application
 class EventViewModel(private val repository: EventRepository) : ViewModel() {
 
-    val allEvents: LiveData<List<Event>> = repository.allEvents.asLiveData()
+    val allEvents: LiveData<List<Event>> = liveData {
+        emitSource(repository.allEvents.asLiveData())
+    }
+
+    fun getEventById(eventId: Int): LiveData<Event> {
+        return repository.getEventById(eventId)
+    }
 
     // Insertion d'un événement
     fun insert(event: Event) = viewModelScope.launch {

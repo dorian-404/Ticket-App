@@ -21,12 +21,6 @@ import androidx.room.PrimaryKey
             parentColumns = ["eventId"],
             childColumns = ["eventId"],
             onDelete = CASCADE
-        ),
-        ForeignKey(
-            entity = Ticket::class,
-            parentColumns = ["ticketId"],
-            childColumns = ["ticketId"],
-            onDelete = CASCADE
         )
     ]
 )
@@ -34,6 +28,5 @@ data class Booking(
     @PrimaryKey(autoGenerate = true) val bookingId: Long = 0,
     val userId: Long,
     val eventId: Long,
-    val ticketId: Long,
     val quantityTickets: Int
 )

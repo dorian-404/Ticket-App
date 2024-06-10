@@ -8,6 +8,12 @@ import androidx.room.Transaction
 import com.example.ticketapp.models.User
 import com.example.ticketapp.relations.UserWithBookings
 
+/**
+ * Data Access Object pour les users
+ * cette interface UserDao permet de definir les requetes
+ * pour chercher les informations des users dans la base de donnees
+ */
+
 @Dao
 interface UserDao {
 
@@ -19,8 +25,8 @@ interface UserDao {
     @Query("SELECT * FROM users")
     suspend fun getAllUsers(): List<User>
 
-    // Récupération d'un utilisateur avec les réservations
+    // Cette requete permet de sekectionner tous les users ayant des reservations
     @Transaction
-    @Query("SELECT * FROM users WHERE userId = :userId")
-    suspend fun getUserWithBookings(userId: Int): List<UserWithBookings>
+    @Query("SELECT * FROM users")
+    suspend fun getUserWithBookings(): List<UserWithBookings>
 }

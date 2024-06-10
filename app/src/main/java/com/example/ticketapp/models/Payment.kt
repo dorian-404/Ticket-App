@@ -20,6 +20,5 @@ data class Payment(
     @PrimaryKey(autoGenerate = true) val paymentId: Long = 0,
     val bookingId: Long,
     val amount: Double,
-    val paymentDate: String,
     val paymentMethod: String
 )

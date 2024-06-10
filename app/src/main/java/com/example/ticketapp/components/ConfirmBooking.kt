@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ticketapp.PaymentActivity
+import com.example.ticketapp.models.Event
+import com.example.ticketapp.models.Ticket
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -26,17 +28,23 @@ import kotlin.coroutines.suspendCoroutine
 
 @SuppressLint("RememberReturnType")
 @Composable
-fun ConfirmBooking(navController: NavController, section: String, type: String, price: String) {
+fun ConfirmBooking(
+    navController: NavController,
+    eventName: String,
+    eventDate: String,
+    eventHour: String,
+    ticketPrice: Double
+) {
     val paddingValue = 16.dp
     val spacingValue = 24.dp
 
     var paymentIntentClientSecret by remember { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
-
+    var total by remember { mutableStateOf(0.0) }
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        fetchPaymentIntent().onSuccess { clientSecret ->
+        fetchPaymentIntent(total).onSuccess { clientSecret ->
             paymentIntentClientSecret = clientSecret
             Log.d("PaymentIntent", "Client Secret successfully set: $clientSecret")
         }.onFailure { paymentIntentError ->
@@ -53,9 +61,9 @@ fun ConfirmBooking(navController: NavController, section: String, type: String, 
         verticalArrangement = Arrangement.Top,
     ) {
         BookingTitle()
-        EventCard(section, type, price)
+        EventCard(eventName, eventDate, eventHour, ticketPrice)
         Spacer(modifier = Modifier.height(spacingValue))
-        SubtotalCard()
+        SubtotalCard(ticketPrice)
         Spacer(modifier = Modifier.height(spacingValue))
         ConfirmButton(context, paymentIntentClientSecret)
     }
@@ -74,7 +82,7 @@ fun BookingTitle() {
 }
 
 @Composable
-fun EventCard(section: String, type: String, price: String) {
+fun EventCard(eventName: String, eventDate: String, eventHour: String, ticketPrice: Double) {
     Card(
         modifier = Modifier
             .width(300.dp)
@@ -85,20 +93,23 @@ fun EventCard(section: String, type: String, price: String) {
         )
     ) {
         Column(modifier = Modifier.padding(15.dp)) {
-            Text("Les Ardentes", fontWeight = FontWeight.Bold)
-            Text(text = "Friday • June 21 • 19.00 - 22.00")
+            Text(text = eventName, fontWeight = FontWeight.Bold)
+            Text(text = eventDate)
             Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "Standard Ticket", color = Color.Gray)
-            Text(text = "CA $${price}", fontWeight = FontWeight.Light)
+            //Text(text = ticketPrice: Double, color = Color.Gray)
+            Text(text = "CA $ + $ticketPrice", fontWeight = FontWeight.Light)
             Spacer(modifier = Modifier.height(10.dp))
-            Text(text = "VIP $section", color = Color.Gray)
-            Text(text = "CA $124.50", fontWeight = FontWeight.Light)
+            //Text(text = "Quantity", color = Color.Gray)
+            //Text(text = "CA $124.50", fontWeight = FontWeight.Light)
         }
     }
 }
 
 @Composable
-fun SubtotalCard() {
+fun SubtotalCard(ticketPrice: Double) {
+    val TAX_RATE = 0.15 // 15% de taxe
+    val tax = ticketPrice * TAX_RATE
+    val total = ticketPrice + tax
     Card(
         modifier = Modifier
             .width(300.dp)
@@ -112,10 +123,10 @@ fun SubtotalCard() {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Subtotal", fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.width(120.dp))
-                Text("CA $282.00", fontWeight = FontWeight.Bold)
+                Text("CA $total", fontWeight = FontWeight.Bold)
             }
             Text(text = "Including taxes", modifier = Modifier.padding(top = 1.dp))
-            Text(text = "2 Tickets : CA $64.50 + CA $124.50", modifier = Modifier.padding(top = 8.dp))
+            Text(text = "2 Tickets : CA $ticketPrice + TAXES", modifier = Modifier.padding(top = 8.dp))
         }
     }
 }
@@ -146,7 +157,7 @@ fun ConfirmButton(context: android.content.Context, paymentIntentClientSecret: S
 
 
 // Methode permettant de recuperer le client secret du serveur
-private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { continuation ->
+private suspend fun fetchPaymentIntent(total: Double): Result<String> = suspendCoroutine { continuation ->
     val url = "http://10.0.2.2:4242/create-payment-intent"
     val ticketPrice = 15000 // valeur test a changer
     val ticketQuantity = 2
@@ -162,10 +173,13 @@ private suspend fun fetchPaymentIntent(): Result<String> = suspendCoroutine { co
     """
     // requete post
     val mediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
-    val body = ticketBooked .toRequestBody(mediaType)
+    val requestBody = JSONObject()
+        .put("total", total)
+        .toString()
+        .toRequestBody(mediaType)
     val request = Request.Builder()
         .url(url)
-        .post(body)
+        .post(requestBody)
         .build()
 
     // creer une instance de OkHttpClient et ensuite on prepare la requete

@@ -49,9 +49,9 @@ fun EventDetails(navController: NavController, eventId: Int, eventViewModel: Eve
             item { EventImage(navController, event) } // Pass event to EventImage
             item { Spacer(modifier = Modifier.height(10.dp)) }
             item { EventDescription(event.description) }
-            item { EventInformation(event.location, event.dateTime) }
+            item { EventInformation(event.location, event.date) }
             item { Spacer(modifier = Modifier.height(16.dp)) }
-            item { BuyTicketButton(16.dp, navController) }
+            item { BuyTicketButton(16.dp, navController, eventId) }
         }
     }
 }
@@ -138,7 +138,7 @@ fun EventInformation(location: String, dateTime: String) {
 }
 
 @Composable
-fun BuyTicketButton(spacingValue: Dp, navController: NavController) {
+fun BuyTicketButton(spacingValue: Dp, navController: NavController, eventId: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,7 +147,7 @@ fun BuyTicketButton(spacingValue: Dp, navController: NavController) {
     ) {
         Spacer(modifier = Modifier.width(spacingValue))
         Button(onClick = {
-            navController.navigate("ticketBooking")
+            navController.navigate("ticketBooking/$eventId")
         },
             modifier = Modifier.width(200.dp),
             colors = ButtonDefaults.buttonColors(
